@@ -2,22 +2,44 @@
 #include <stdlib.h>
 #include <omp.h>
 
-int main()
+void benchmarkFile(const char *filename, const char *label)
 {
-    FILE *fptr;
-
-    fptr = fopen("small.csv","r");
+    FILE *fp = fopen(filename, "rb");
+    if (fp == NULL)
+    {
+        printf("Error: Could not open %s\n", filename);
+        return;
+    }
 
     double start = omp_get_wtime();
 
-    char line[1024];
-    while(fgets(line,1024,fptr))
+    fseek(fp, 0, SEEK_END);
+    long file_size = ftell(fp);
+    rewind(fp);
+
+    char *box = (char *)malloc(file_size + 1);
+    if (box == NULL)
     {
-        
+        printf("Error: Memory allocation failed for %s\n", filename);
+        fclose(fp);
+        return;
     }
+
+    fread(box, 1, file_size, fp);
+    box[file_size] = '\0';
+
+    fclose(fp);
     double end = omp_get_wtime();
 
-    printf("The load time of small.csv is: %f \n",end-start);
-    fclose(fptr);
+    printf("%s loaded in memory in %lfs\n", label, end - start);
+    free(box);
+}
+
+int main(void)
+{
+    benchmarkFile("small.csv", "Small CSV");
+    benchmarkFile("medium.csv", "Medium CSV");
+    benchmarkFile("large.csv", "Large CSV");
+
     return 0;
 }
