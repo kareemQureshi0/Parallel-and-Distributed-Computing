@@ -37,9 +37,9 @@ void benchmarkFile(const char *filename, const char *label)
 
 int main(void)
 {
-    benchmarkFile("small.csv", "Small CSV");
-    benchmarkFile("medium.csv", "Medium CSV");
-    benchmarkFile("large.csv", "Large CSV");
+    benchmarkFile("Sequential/small.csv", "Small CSV");
+    benchmarkFile("Sequential/medium.csv", "Medium CSV");
+    benchmarkFile("Sequential/large.csv", "Large CSV");
 
     return 0;
 }
