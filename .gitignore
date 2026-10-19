@@ -1,4 +1,2 @@
-Sequential/large.csv
-Sequential/medium.csv
-Sequential/small.csv
+Sequential/*.csv
 dataset
