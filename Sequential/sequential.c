@@ -98,24 +98,11 @@ int benchSequential(char *filename)
 
     }while(!feof(file));
 
-    
-
-    // for(int i = 0; i<5;i++)
-    // {
-    //     printf("Record %d:\n",i+1);
-    //     printf("Roll no: %d\n",database[i].roll_no);
-    //     printf("Subject 1 Marks: %d\n",database[i].subj1);
-    //     printf("Subject 2 Marks: %d\n",database[i].subj2);
-    //     printf("Subject 3 Marks: %d\n",database[i].subj3);
-    //     printf("Subject 4 Marks: %d\n",database[i].subj4);
-    //     printf("Subject 5 Marks: %d\n",database[i].subj5);
-    // }
-
     long total = 0;
     float average;
 
 
-    // Overall Average of the students
+    // Overall Average of the students of each subject
     for (int i = 0; i<record;i++)
     {
         total+=database[i].subj1+database[i].subj2+database[i].subj3+database[i].subj4+database[i].subj5;
@@ -123,7 +110,7 @@ int benchSequential(char *filename)
 
     average = total/(record*5.0);
 
-    //Subject Averages
+    //Each Subject Average
 
     int subj1_total = 0;
     int subj2_total = 0;
