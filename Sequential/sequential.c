@@ -132,7 +132,7 @@ int benchSequential(char *filename)
     int subj5_total= 0;
 
     float avg_of_subj1;
-    float avg_of_subj2;
+    float avg_of_subj2; 
     float avg_of_subj3;
     float avg_of_subj4;
     float avg_of_subj5;
@@ -140,15 +140,24 @@ int benchSequential(char *filename)
     for(int i = 0;i<record;i++)
     {
         subj1_total+=database[i].subj1;
+        subj2_total+=database[i].subj2;
+        subj3_total+=database[i].subj3;
+        subj4_total+=database[i].subj4;
+        subj5_total+=database[i].subj5;
     }
+
     avg_of_subj1 = (float)subj1_total/(float)record;
+    avg_of_subj2 = (float)subj2_total/(float)record;
+    avg_of_subj3 = (float)subj3_total/(float)record;
+    avg_of_subj4 = (float)subj4_total/(float)record;
+    avg_of_subj5 = (float)subj5_total/(float)record;
 
     double end = omp_get_wtime();
 
     printf("Students: %d\n",record);
     printf("Overall Average: %.4f\n",average);
+    printf("Subject Average: S1 %.2f S2 %.2f S3 %.2f S4 %.2f S5 %.2f \n",avg_of_subj1,avg_of_subj2,avg_of_subj3,avg_of_subj4,avg_of_subj5);
     printf("Time taken: %lf\n",end - start);
-    printf("Average subject 1: %f\n",avg_of_subj1);
     return 0;
 }
 
