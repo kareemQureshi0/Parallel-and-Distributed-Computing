@@ -123,20 +123,44 @@ int benchSequential(char *filename)
 
     average = total/(record*5.0);
 
+    //Subject Averages
+
+    int subj1_total = 0;
+    int subj2_total = 0;
+    int subj3_total = 0;
+    int subj4_total = 0;
+    int subj5_total= 0;
+
+    float avg_of_subj1;
+    float avg_of_subj2;
+    float avg_of_subj3;
+    float avg_of_subj4;
+    float avg_of_subj5;
+
+    for(int i = 0;i<record;i++)
+    {
+        subj1_total+=database[i].subj1;
+    }
+    avg_of_subj1 = (float)subj1_total/(float)record;
+
     double end = omp_get_wtime();
 
     printf("Students: %d\n",record);
     printf("Overall Average: %.4f\n",average);
     printf("Time taken: %lf\n",end - start);
+    printf("Average subject 1: %f\n",avg_of_subj1);
     return 0;
 }
 
 // Main method
 int main(int argc, char *argv[])
 {
-
+    printf("Analysis of Small CSV file\n");
     benchSequential("small.csv");
+
+    // printf("\nAnalysis of Medium CSV file\n");
     // benchSequential("medium.csv");
+    // printf("\nAnalysis of Large CSV file\n");
     // benchSequential("large.csv");
 
     return 0;
