@@ -96,18 +96,11 @@ int benchSequential(char *filename)
 
     } while (!feof(file));
 
+
+    double end = omp_get_wtime();
+
     long total = 0;
     float average;
-
-    // Overall Average of the students of each subject
-    for (int i = 0; i < record; i++)
-    {
-        total += database[i].subj1 + database[i].subj2 + database[i].subj3 + database[i].subj4 + database[i].subj5;
-    }
-
-    average = total / (record * 5.0);
-
-    // Each Subject Average
 
     int subj1_total = 0;
     int subj2_total = 0;
@@ -121,28 +114,23 @@ int benchSequential(char *filename)
     float avg_of_subj4;
     float avg_of_subj5;
 
+    int pass = 0;
+    int fail = 0;
+
+    int pass1=0,pass2=0,pass3=0,pass4=0,pass5=0;
+
+
+    // Overall Average of the students of each subject
     for (int i = 0; i < record; i++)
     {
+        total += database[i].subj1 + database[i].subj2 + database[i].subj3 + database[i].subj4 + database[i].subj5;
+        
         subj1_total += database[i].subj1;
         subj2_total += database[i].subj2;
         subj3_total += database[i].subj3;
         subj4_total += database[i].subj4;
         subj5_total += database[i].subj5;
-    }
 
-    avg_of_subj1 = (float)subj1_total / (float)record;
-    avg_of_subj2 = (float)subj2_total / (float)record;
-    avg_of_subj3 = (float)subj3_total / (float)record;
-    avg_of_subj4 = (float)subj4_total / (float)record;
-    avg_of_subj5 = (float)subj5_total / (float)record;
-
-    // Pass and fail count
-
-    int pass = 0;
-    int fail = 0;
-
-    for (int i = 0; i < record; i++)
-    {
         if ((database[i].subj1 >= 50) && (database[i].subj2 >= 50) && (database[i].subj3 >= 50) && (database[i].subj4 >= 50) && (database[i].subj5 >= 50))
         {
             pass++;
@@ -151,14 +139,55 @@ int benchSequential(char *filename)
         {
             fail++;
         }
+
+         if(database[i].subj1>=50)
+        {
+            pass1++;
+        }
+
+        if(database[i].subj2>=50)
+        {
+            pass2++;
+        }
+
+        if(database[i].subj3>=50)
+        {
+            pass3++;
+        }
+
+        if(database[i].subj4>=50)
+        {
+            pass4++;
+        }
+
+        if(database[i].subj5>=50)
+        {
+            pass5++;
+        }
+   
     }
 
-    double end = omp_get_wtime();
+    average = total / (record * 5.0);
+
+    avg_of_subj1 = (float)subj1_total / (float)record;
+    avg_of_subj2 = (float)subj2_total / (float)record;
+    avg_of_subj3 = (float)subj3_total / (float)record;
+    avg_of_subj4 = (float)subj4_total / (float)record;
+    avg_of_subj5 = (float)subj5_total / (float)record;
+
+
+    float avg_of_S1= ((float)pass1/(float)record)*100.0;
+    float avg_of_S2= ((float)pass2/(float)record)*100.0;
+    float avg_of_S3= ((float)pass3/(float)record)*100.0;
+    float avg_of_S4= ((float)pass4/(float)record)*100.0;
+    float avg_of_S5= ((float)pass5/(float)record)*100.0;
+
 
     printf("Students: %d\n", record);
     printf("Overall Average: %.4f\n", average);
+    printf("Passed %d / Failed: %d\n", pass, fail);
     printf("Subject Average: S1 %.2f S2 %.2f S3 %.2f S4 %.2f S5 %.2f \n", avg_of_subj1, avg_of_subj2, avg_of_subj3, avg_of_subj4, avg_of_subj5);
-    printf("Pass %d / Fail %d\n", pass, fail);
+    printf("Subject pass rate: S1: %.2f%% S2: %.2f%% S3: %.2f%% S4: %.2f%% S5: %.2f%% \n",avg_of_S1,avg_of_S2,avg_of_S3,avg_of_S4,avg_of_S5);
     printf("Time taken: %lf\n", end - start);
 
     return 0;
