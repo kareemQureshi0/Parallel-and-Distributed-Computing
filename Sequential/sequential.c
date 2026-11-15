@@ -10,6 +10,15 @@ typedef struct
 
 } Student;
 
+void swap(float *a,float *b)
+{
+    float *temp;
+    temp = a;
+    a = b;
+    b = temp;
+}
+
+
 int benchSequential(char *filename)
 {
     // File Initialization
@@ -96,7 +105,6 @@ int benchSequential(char *filename)
 
     } while (!feof(file));
 
-
     double end = omp_get_wtime();
 
     long total = 0;
@@ -116,15 +124,26 @@ int benchSequential(char *filename)
 
     int pass = 0;
     int fail = 0;
+    int max = 0;
+    int highest_roll;
+    int min = 100;
+    int lowest_roll;
+    char *max_subj;
+    char *min_subj;
+    int index[10];
+    int pass1 = 0, pass2 = 0, pass3 = 0, pass4 = 0, pass5 = 0;
+    float avg[record];
+    int top_10[10];
 
-    int pass1=0,pass2=0,pass3=0,pass4=0,pass5=0;
-
+    double start_analysis = omp_get_wtime();
 
     // Overall Average of the students of each subject
     for (int i = 0; i < record; i++)
+
     {
+
         total += database[i].subj1 + database[i].subj2 + database[i].subj3 + database[i].subj4 + database[i].subj5;
-        
+
         subj1_total += database[i].subj1;
         subj2_total += database[i].subj2;
         subj3_total += database[i].subj3;
@@ -140,33 +159,111 @@ int benchSequential(char *filename)
             fail++;
         }
 
-         if(database[i].subj1>=50)
+        if (database[i].subj1 >= 50)
         {
             pass1++;
         }
 
-        if(database[i].subj2>=50)
+        if (database[i].subj2 >= 50)
         {
             pass2++;
         }
 
-        if(database[i].subj3>=50)
+        if (database[i].subj3 >= 50)
         {
             pass3++;
         }
 
-        if(database[i].subj4>=50)
+        if (database[i].subj4 >= 50)
         {
             pass4++;
         }
 
-        if(database[i].subj5>=50)
+        if (database[i].subj5 >= 50)
         {
             pass5++;
         }
-   
+
+        // Highest Score
+
+        if ((database[i].subj1 >= database[i].subj2) && (database[i].subj1 >= database[i].subj3) && (database[i].subj1 >= database[i].subj4) && (database[i].subj1 >= database[i].subj5) && (database[i].subj1 > max))
+        {
+            max = database[i].subj1;
+            highest_roll = i + 1;
+            max_subj = "S1";
+        }
+
+        if ((database[i].subj2 >= database[i].subj1) && (database[i].subj2 >= database[i].subj3) && (database[i].subj2 >= database[i].subj4) && (database[i].subj2 >= database[i].subj5) && (database[i].subj2 > max))
+        {
+            max = database[i].subj2;
+            highest_roll = i + 1;
+            max_subj = "S2";
+        }
+
+        if ((database[i].subj3 >= database[i].subj1) && (database[i].subj3 >= database[i].subj2) && (database[i].subj3 >= database[i].subj4) && (database[i].subj3 >= database[i].subj5) && (database[i].subj3 > max))
+        {
+            max = database[i].subj3;
+            highest_roll = i + 1;
+            max_subj = "S3";
+        }
+
+        if ((database[i].subj4 >= database[i].subj1) && (database[i].subj4 >= database[i].subj2) && (database[i].subj4 >= database[i].subj3) && (database[i].subj4 >= database[i].subj5) && (database[i].subj4 > max))
+        {
+            max = database[i].subj4;
+            highest_roll = i + 1;
+            max_subj = "S4";
+        }
+
+        if ((database[i].subj5 >= database[i].subj1) && (database[i].subj5 >= database[i].subj2) && (database[i].subj5 >= database[i].subj3) && (database[i].subj5 >= database[i].subj4) && (database[i].subj5 > max))
+        {
+            max = database[i].subj5;
+            highest_roll = i + 1;
+            max_subj = "S5";
+        }
+
+        // Lowest Number
+        if ((database[i].subj1 <= database[i].subj2) && (database[i].subj1 <= database[i].subj3) && (database[i].subj1 <= database[i].subj4) && (database[i].subj1 <= database[i].subj5) && (database[i].subj1 < min))
+        {
+            min = database[i].subj1;
+            lowest_roll = i + 1;
+            min_subj = "S1";
+        }
+
+        if ((database[i].subj2 <= database[i].subj1) && (database[i].subj2 <= database[i].subj3) && (database[i].subj2 <= database[i].subj4) && (database[i].subj2 <= database[i].subj5) && (database[i].subj2 < min))
+        {
+            min = database[i].subj2;
+            lowest_roll = i + 1;
+            min_subj = "S2";
+        }
+
+        if ((database[i].subj3 <= database[i].subj1) && (database[i].subj3 <= database[i].subj2) && (database[i].subj3 <= database[i].subj4) && (database[i].subj3 <= database[i].subj5) && (database[i].subj3 < min))
+        {
+            min = database[i].subj3;
+            lowest_roll = i + 1;
+            min_subj = "S3";
+        }
+
+        if ((database[i].subj4 <= database[i].subj1) && (database[i].subj4 <= database[i].subj2) && (database[i].subj4 <= database[i].subj3) && (database[i].subj4 <= database[i].subj5) && (database[i].subj4 < min))
+        {
+            min = database[i].subj4;
+            lowest_roll = i + 1;
+            min_subj = "S4";
+        }
+
+        if ((database[i].subj5 <= database[i].subj1) && (database[i].subj5 <= database[i].subj2) && (database[i].subj5 <= database[i].subj3) && (database[i].subj5 <= database[i].subj4) && (database[i].subj5 < min))
+        {
+            min = database[i].subj5;
+            lowest_roll = i + 1;
+            min_subj = "S5";
+        }
+
+        avg[i] = (database[i].subj1 + database[i].subj2 + database[i].subj3 + database[i].subj4 + database[i].subj5) / 5.0;
     }
 
+    for(int i = 0; i<10;i++)
+    {
+        printf("%f\n",avg[i]);
+    }
     average = total / (record * 5.0);
 
     avg_of_subj1 = (float)subj1_total / (float)record;
@@ -175,20 +272,24 @@ int benchSequential(char *filename)
     avg_of_subj4 = (float)subj4_total / (float)record;
     avg_of_subj5 = (float)subj5_total / (float)record;
 
+    float avg_of_S1 = ((float)pass1 / (float)record) * 100.0;
+    float avg_of_S2 = ((float)pass2 / (float)record) * 100.0;
+    float avg_of_S3 = ((float)pass3 / (float)record) * 100.0;
+    float avg_of_S4 = ((float)pass4 / (float)record) * 100.0;
+    float avg_of_S5 = ((float)pass5 / (float)record) * 100.0;
 
-    float avg_of_S1= ((float)pass1/(float)record)*100.0;
-    float avg_of_S2= ((float)pass2/(float)record)*100.0;
-    float avg_of_S3= ((float)pass3/(float)record)*100.0;
-    float avg_of_S4= ((float)pass4/(float)record)*100.0;
-    float avg_of_S5= ((float)pass5/(float)record)*100.0;
-
+    double end_analysis = omp_get_wtime();
 
     printf("Students: %d\n", record);
     printf("Overall Average: %.4f\n", average);
     printf("Passed %d / Failed: %d\n", pass, fail);
     printf("Subject Average: S1 %.2f S2 %.2f S3 %.2f S4 %.2f S5 %.2f \n", avg_of_subj1, avg_of_subj2, avg_of_subj3, avg_of_subj4, avg_of_subj5);
-    printf("Subject pass rate: S1: %.2f%% S2: %.2f%% S3: %.2f%% S4: %.2f%% S5: %.2f%% \n",avg_of_S1,avg_of_S2,avg_of_S3,avg_of_S4,avg_of_S5);
-    printf("Time taken: %lf\n", end - start);
+    printf("Subject pass rate: S1: %.2f%% S2: %.2f%% S3: %.2f%% S4: %.2f%% S5: %.2f%% \n", avg_of_S1, avg_of_S2, avg_of_S3, avg_of_S4, avg_of_S5);
+    printf("Highest marks: %d(Roll: %d %s)\n", max, highest_roll, max_subj);
+    printf("Lowest marks: %d(Roll: %d %s)\n", min, lowest_roll, min_subj);
+    printf("Average of first student: %.2f\n", avg[0]);
+    printf("Statistical Analysis %lf\n", end_analysis - start_analysis);
+    printf("File Analysis: %lf\n", end - start);
 
     return 0;
 }
