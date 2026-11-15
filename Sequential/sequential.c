@@ -260,10 +260,6 @@ int benchSequential(char *filename)
         avg[i] = (database[i].subj1 + database[i].subj2 + database[i].subj3 + database[i].subj4 + database[i].subj5) / 5.0;
     }
 
-    for(int i = 0; i<10;i++)
-    {
-        printf("%f\n",avg[i]);
-    }
     average = total / (record * 5.0);
 
     avg_of_subj1 = (float)subj1_total / (float)record;
