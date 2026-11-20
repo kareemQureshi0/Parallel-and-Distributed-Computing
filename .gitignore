@@ -4,3 +4,6 @@ Sequential/seq
 *.txt
 .gitignore
 OpenMP/open
+OpenMP/*.csv
+MPI/*.csv
+Hybrid(OpenMP + MPI)/*.csv
