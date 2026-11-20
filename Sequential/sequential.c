@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <omp.h>
 
+#define K 10
+
 // Structre Definition According to file
 typedef struct
 {
@@ -10,14 +12,85 @@ typedef struct
 
 } Student;
 
-void swap(float *a,float *b)
+typedef struct
 {
-    float *temp;
-    temp = a;
-    a = b;
-    b = temp;
+    int roll_no;
+    float avg;
+}HeapNode;
+
+int isBetter(HeapNode a, HeapNode b)
+{
+    if(a.avg!=b.avg)                    // This method will return true or false 0
+    {
+        return a.avg>b.avg;
+    }
+    return a.roll_no<b.roll_no;
+    
 }
 
+void swap(HeapNode *a,HeapNode *b)
+{
+    HeapNode temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void sortTopTen(HeapNode arr[], int size)
+{
+    for (int i = 0; i < size - 1; i++)
+    {
+        int swapped = 0;
+        for (int j = 0; j < size - i - 1; j++)
+        {
+            // If arr[j + 1] is better than arr[j], swap them so the best moves to the front
+            if (isBetter(arr[j + 1], arr[j]))
+            {
+                swap(&arr[j], &arr[j + 1]);
+                swapped = 1;
+            }
+        }
+        // Stop early if already sorted
+        if (!swapped)
+        {
+            break;
+        }
+    }
+}
+
+
+void minHeapifyDown(HeapNode heap[],int size, int index)
+{
+    int worst = index;
+    int left = 2 * index +1;
+    int right = 2 * index +2;
+
+    if(left < size && isBetter(heap[worst],heap[left]))
+    {
+        worst = left;
+    }
+
+    if (right < size && isBetter(heap[worst],heap[right]))
+    {
+        worst = right;
+    }
+
+    if(worst!= index)
+    {
+        swap(&heap[index],&heap[worst]);
+        minHeapifyDown(heap,size,worst);
+    }
+}
+
+void minHeapifyUp(HeapNode heap[],int index)
+{
+    int parent = (index-1)/2;
+    if(index>0 && isBetter(heap[parent],heap[index]))
+    {
+        swap(&heap[index],&heap[parent]);
+        minHeapifyUp(heap,parent);
+    }
+}
 
 int benchSequential(char *filename)
 {
@@ -110,11 +183,11 @@ int benchSequential(char *filename)
     long total = 0;
     float average;
 
-    int subj1_total = 0;
-    int subj2_total = 0;
-    int subj3_total = 0;
-    int subj4_total = 0;
-    int subj5_total = 0;
+    long long subj1_total = 0;
+    long long subj2_total = 0;
+    long long subj3_total = 0;
+    long long subj4_total = 0;
+    long long subj5_total = 0;
 
     float avg_of_subj1;
     float avg_of_subj2;
@@ -132,8 +205,10 @@ int benchSequential(char *filename)
     char *min_subj;
     int index[10];
     int pass1 = 0, pass2 = 0, pass3 = 0, pass4 = 0, pass5 = 0;
-    float avg[record];
-    int top_10[10];
+    HeapNode top_10[K];
+    int heapSize = 0;
+    
+
 
     double start_analysis = omp_get_wtime();
 
@@ -143,6 +218,9 @@ int benchSequential(char *filename)
     {
 
         total += database[i].subj1 + database[i].subj2 + database[i].subj3 + database[i].subj4 + database[i].subj5;
+        int student_total = database[i].subj1 + database[i].subj2 + 
+                    database[i].subj3 + database[i].subj4 + 
+                    database[i].subj5;
 
         subj1_total += database[i].subj1;
         subj2_total += database[i].subj2;
@@ -256,9 +334,23 @@ int benchSequential(char *filename)
             lowest_roll = i + 1;
             min_subj = "S5";
         }
+        
+        // Top 10 
 
-        avg[i] = (database[i].subj1 + database[i].subj2 + database[i].subj3 + database[i].subj4 + database[i].subj5) / 5.0;
+        HeapNode current = {database[i].roll_no,student_total/5.0f};
+
+        if(heapSize<10)
+        {
+            top_10[heapSize] = current;
+            minHeapifyUp(top_10,heapSize);
+            heapSize++;
+        }
+        else if(isBetter(current,top_10[0])){
+            top_10[0] = current;
+            minHeapifyDown(top_10,K,0);
+        }
     }
+
 
     average = total / (record * 5.0);
 
@@ -274,32 +366,41 @@ int benchSequential(char *filename)
     float avg_of_S4 = ((float)pass4 / (float)record) * 100.0;
     float avg_of_S5 = ((float)pass5 / (float)record) * 100.0;
 
+
     double end_analysis = omp_get_wtime();
 
-    printf("Students: %d\n", record);
+    printf("\nStudents: %d\n", record);
     printf("Overall Average: %.4f\n", average);
     printf("Passed %d / Failed: %d\n", pass, fail);
     printf("Subject Average: S1 %.2f S2 %.2f S3 %.2f S4 %.2f S5 %.2f \n", avg_of_subj1, avg_of_subj2, avg_of_subj3, avg_of_subj4, avg_of_subj5);
     printf("Subject pass rate: S1: %.2f%% S2: %.2f%% S3: %.2f%% S4: %.2f%% S5: %.2f%% \n", avg_of_S1, avg_of_S2, avg_of_S3, avg_of_S4, avg_of_S5);
-    printf("Highest marks: %d(Roll: %d %s)\n", max, highest_roll, max_subj);
-    printf("Lowest marks: %d(Roll: %d %s)\n", min, lowest_roll, min_subj);
-    printf("Average of first student: %.2f\n", avg[0]);
-    printf("Statistical Analysis %lf\n", end_analysis - start_analysis);
+    printf("Highest marks: %d (Roll: %d %s)\n", max, highest_roll, max_subj);
+    printf("Lowest marks: %d (Roll: %d %s)\n", min, lowest_roll, min_subj);
+    printf("Top 10: ");
+    sortTopTen(top_10,heapSize);
+    for(int i = 0;i<heapSize;i++)
+    {
+        printf("roll %d (%.1f) ",top_10[i].roll_no,top_10[i].avg);
+    }
+    printf("\nStatistical Analysis %lf\n", end_analysis - start_analysis);
     printf("File Analysis: %lf\n", end - start);
 
+    free(database);
+    fclose(file);
+    
     return 0;
 }
 
 // Main method
 int main(int argc, char *argv[])
 {
+
     printf("Analysis of Small CSV file\n");
     benchSequential("small.csv");
-
-    // printf("\nAnalysis of Medium CSV file\n");
-    // benchSequential("medium.csv");
-    // printf("\nAnalysis of Large CSV file\n");
-    // benchSequential("large.csv");
+    printf("\nAnalysis of Medium CSV file\n");
+    benchSequential("medium.csv");
+    printf("\nAnalysis of Large CSV file\n");
+    benchSequential("large.csv");
 
     return 0;
 }
