@@ -1,3 +1,6 @@
 Sequential/*.csv
 dataset
-Sequential/sequential
+Sequential/seq
+*.txt
+.gitignore
+OpenMP/open

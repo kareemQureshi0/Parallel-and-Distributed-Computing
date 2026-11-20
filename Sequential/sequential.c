@@ -397,8 +397,10 @@ int main(int argc, char *argv[])
 
     printf("Analysis of Small CSV file\n");
     benchSequential("small.csv");
+
     printf("\nAnalysis of Medium CSV file\n");
     benchSequential("medium.csv");
+    
     printf("\nAnalysis of Large CSV file\n");
     benchSequential("large.csv");
 
